@@ -1,0 +1,30 @@
+{
+  "name": "bateeq-pos-api",
+  "version": "1.0.0",
+  "description": "Bateeq RESTful pos api",
+  "main": "server.js",
+  "dependencies": {
+    "bateeq-module": "git+https://github.com/danliris/bateeq-module.git#dev",
+    "js-toolkit": "git+https://github.com/pinkgorilla/js-toolkit.git",
+    "mongo-factory": "^1.0.0",
+    "mongodb": "^2.1.18",
+    "restify": "^4.1.1",
+    "restify-router": "^0.2.1"
+  },
+  "devDependencies": {
+    "should": "^9.0.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danliris/bateeq-pos-api.git"
+  },
+  "author": "Tris Setiawan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danliris/bateeq-pos-api/issues"
+  },
+  "homepage": "https://github.com/danliris/bateeq-pos-api#readme"
+}

@@ -1,2 +1,2 @@
 # bateeq-pos-api
-api for Bateeq POS
+Bateeq RESTful POS api
