@@ -3,6 +3,7 @@ var router = new Router();
 var PromoManager = require('bateeq-module').sales.PromoManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
+var ObjectId = require('mongodb').ObjectId;
 
 const apiVersion = '1.0.0';
 
@@ -37,7 +38,7 @@ router.get('/:id', (request, response, next) => {
         
         var id = request.params.id;
 
-        manager.getById(id)
+        manager.getSingleById(id)
             .then(doc => {
                 var result = resultFormatter.ok(apiVersion, 200, doc);
                 response.send(200, result); 
@@ -50,23 +51,32 @@ router.get('/:id', (request, response, next) => {
     })
 });
 
-router.get('/:storeId/:variantId/:datetime', (request, response, next) => {
+router.get('/:storeId/:itemId/:datetime', (request, response, next) => {
     db.get().then(db => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
         
-        
         var storeId = request.params.storeId; 
-        var variantId = request.params.variantId;  
+        var itemId = request.params.itemId;  
         //Date Format : yyyy-MM-ddThh:mm:ss
         //var datetime = new Date(request.params.datetime);
         var datetime = request.params.datetime;
+        
+        var query = request.query;
+        query.filter = {
+            stores: {'$elemMatch': { _id: new ObjectId(storeId)}},
+            promoProducts: {'$elemMatch': { itemId: new ObjectId(itemId)}},
+            validDateFrom: {'$lte': new Date(datetime)},
+            validDateTo: {'$gte': new Date(datetime)}
+        };
 
-        manager.getByStoreVariantDatetime(storeId, variantId, datetime)
-            .then(doc => {
-                var result = resultFormatter.ok(apiVersion, 200, doc);
-                response.send(200, result); 
+        manager.read(query)
+            .then(docs => {
+                var result = resultFormatter.ok(apiVersion, 200, docs.data);
+                delete docs.data;
+                result.info = docs;
+                response.send(200, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 400, e);
