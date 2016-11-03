@@ -1,15 +1,14 @@
 var Router = require('restify-router').Router;;
 var router = new Router();
-var PromoManager = require('bateeq-module').sales.PromoManager;
+var ItemManager = require('bateeq-module').master.ItemManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
-var ObjectId = require('mongodb').ObjectId;
 
 const apiVersion = '1.0.0';
 
 router.get('/', (request, response, next) => {
     db.get().then(db => {
-        var manager = new PromoManager(db, {
+        var manager = new ItemManager(db, {
             username: 'router'
         });
         
@@ -32,7 +31,7 @@ router.get('/', (request, response, next) => {
 
 router.get('/:id', (request, response, next) => {
     db.get().then(db => {
-        var manager = new PromoManager(db, {
+        var manager = new ItemManager(db, {
             username: 'router'
         });
         
@@ -51,44 +50,9 @@ router.get('/:id', (request, response, next) => {
     })
 });
 
-router.get('/:storeId/:itemId/:datetime', (request, response, next) => {
-    db.get().then(db => {
-        var manager = new PromoManager(db, {
-            username: 'router'
-        });
-        
-        var storeId = request.params.storeId; 
-        var itemId = request.params.itemId;  
-        //Date Format : yyyy-MM-ddThh:mm:ss
-        //var datetime = new Date(request.params.datetime);
-        var datetime = request.params.datetime;
-        
-        var query = request.query;
-        query.filter = {
-            stores: {'$elemMatch': { _id: new ObjectId(storeId)}},
-            promoProducts: {'$elemMatch': { itemId: new ObjectId(itemId)}},
-            validDateFrom: {'$lte': new Date(datetime)},
-            validDateTo: {'$gte': new Date(datetime)}
-        };
-
-        manager.read(query)
-            .then(docs => {
-                var result = resultFormatter.ok(apiVersion, 200, docs.data);
-                delete docs.data;
-                result.info = docs;
-                response.send(200, result);
-            })
-            .catch(e => {
-                var error = resultFormatter.fail(apiVersion, 400, e);
-                response.send(400, error);
-            })
-
-    })
-});
-
 router.post('/', (request, response, next) => {
     db.get().then(db => {
-        var manager = new PromoManager(db, {
+        var manager = new ItemManager(db, {
             username: 'router'
         });
         
@@ -96,7 +60,7 @@ router.post('/', (request, response, next) => {
 
         manager.create(data)
             .then(docId => {
-                response.header('Location', `sales/docs/promos/${docId.toString()}`);
+                response.header('Location', `masters/items/${docId.toString()}`);
                 var result = resultFormatter.ok(apiVersion, 201);
                 response.send(201, result);
             })
@@ -110,7 +74,7 @@ router.post('/', (request, response, next) => {
 
 router.put('/:id', (request, response, next) => {
     db.get().then(db => {
-        var manager = new PromoManager(db, {
+        var manager = new ItemManager(db, {
             username: 'router'
         });
         
@@ -132,7 +96,7 @@ router.put('/:id', (request, response, next) => {
 
 router.del('/:id', (request, response, next) => {
     db.get().then(db => {
-        var manager = new PromoManager(db, {
+        var manager = new ItemManager(db, {
             username: 'router'
         });
         

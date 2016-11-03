@@ -15,6 +15,12 @@ masterBankRouter.applyRoutes(server, "v1/master/banks");
 var masterCardTypeRouter = require('./src/routers/v1/master/card-type-router');
 masterCardTypeRouter.applyRoutes(server, "v1/master/cardtypes/"); 
 
+var masterItemRouter = require('./src/routers/v1/master/item-router');
+masterItemRouter.applyRoutes(server, "v1/master/items/"); 
+
+var masterFinishedGoodsRouter = require('./src/routers/v1/master/finished-goods-router');
+masterFinishedGoodsRouter.applyRoutes(server, "v1/master/finishedgoods/"); 
+
 var salesModuleRouter = require('./src/routers/v1/sales/sales-module-router');
 salesModuleRouter.applyRoutes(server, "v1/sales/docs/sales");  
 

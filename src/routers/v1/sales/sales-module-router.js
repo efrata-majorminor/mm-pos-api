@@ -3,6 +3,7 @@ var router = new Router();
 var PaymentManager = require('bateeq-module').sales.SalesManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
+var ObjectId = require('mongodb').ObjectId;
 
 const apiVersion = '1.0.0';
 
@@ -11,11 +12,11 @@ router.get('/', (request, response, next) => {
         var manager = new PaymentManager(db, {
             username: 'router'
         });
-        
+
         var query = request.query;
 
         manager.read(query)
-            .then(docs => { 
+            .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
                 delete docs.data;
                 result.info = docs;
@@ -34,13 +35,13 @@ router.get('/:id', (request, response, next) => {
         var manager = new PaymentManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
 
-        manager.getById(id)
+        manager.getSingleById(id)
             .then(doc => {
                 var result = resultFormatter.ok(apiVersion, 200, doc);
-                response.send(200, result); 
+                response.send(200, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 400, e);
@@ -60,7 +61,16 @@ router.get('/:storeid/:datefrom/:dateto', (request, response, next) => {
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
 
-        manager.getByStoreDatefromDateTo(storeid, datefrom, dateto)
+        var query = request.query;
+        query.filter = {
+            storeId: new ObjectId(storeid),
+            date: {
+                $gte: new Date(datefrom),
+                $lte: new Date(dateto)
+            }
+        };
+
+        manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
                 delete docs.data;
@@ -80,7 +90,7 @@ router.post('/', (request, response, next) => {
         var manager = new PaymentManager(db, {
             username: 'router'
         });
-        
+
         var data = request.body;
 
         manager.create(data)
@@ -102,7 +112,7 @@ router.put('/:id', (request, response, next) => {
         var manager = new PaymentManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
         var data = request.body;
 
@@ -124,7 +134,7 @@ router.del('/:id', (request, response, next) => {
         var manager = new PaymentManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
         var data = request.body;
 
