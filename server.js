@@ -24,9 +24,6 @@ masterFinishedGoodsRouter.applyRoutes(server, "v1/master/finishedgoods/");
 var salesModuleRouter = require('./src/routers/v1/sales/sales-module-router');
 salesModuleRouter.applyRoutes(server, "v1/sales/docs/sales");  
 
-var salesRewardTypeRouter = require('./src/routers/v1/sales/reward-type-router');
-salesRewardTypeRouter.applyRoutes(server, "v1/sales/rewardtypes");
-
 var salesPromoRouter = require('./src/routers/v1/sales/promo-router');
 salesPromoRouter.applyRoutes(server, "v1/sales/docs/promos"); 
 
