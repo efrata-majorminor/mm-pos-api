@@ -65,20 +65,20 @@ router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) =>
         
         var query = request.query;
         query.filter = {
+            'validFrom': {
+                '$lte': new Date(datetime)
+            },
+            'validTo': {
+                '$gte': new Date(datetime)
+            },
+            'stores': {
+                '$elemMatch': { 
+                    '_id': new ObjectId(storeId)
+                }
+            },
             '$or': [
                 {
-                    'criteria.type': 'selected-product', 
-                    'validFrom': {
-                        '$lte': new Date(datetime)
-                    },
-                    'validTo': {
-                        '$gte': new Date(datetime)
-                    },
-                    'stores': {
-                        '$elemMatch': { 
-                            '_id': new ObjectId(storeId)
-                        }
-                    },
+                    'criteria.type': 'selected-product',
                     'criteria.criterions': {
                         '$elemMatch' : {
                             'itemId': new ObjectId(itemId),
@@ -87,10 +87,15 @@ router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) =>
                             }
                         }
                     }
-                }//,
-                // {
-                //     'criteria.type': 'package'
-                // }
+                },
+                {
+                    'criteria.type': 'package',
+                    'criteria.criterions': {
+                        '$elemMatch' : {
+                            'itemId': new ObjectId(itemId)
+                        }
+                    }
+                }
             ]
         };
 
