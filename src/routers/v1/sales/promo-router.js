@@ -51,24 +51,52 @@ router.get('/:id', (request, response, next) => {
     })
 });
 
-router.get('/:storeId/:itemId/:datetime', (request, response, next) => {
+router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) => {
     db.get().then(db => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
         
         var storeId = request.params.storeId; 
-        var itemId = request.params.itemId;  
         //Date Format : yyyy-MM-ddThh:mm:ss
-        //var datetime = new Date(request.params.datetime);
         var datetime = request.params.datetime;
+        var itemId = request.params.itemId;  
+        var quantity = parseInt(request.params.quantity);
         
         var query = request.query;
         query.filter = {
-            stores: {'$elemMatch': { _id: new ObjectId(storeId)}},
-            promoProducts: {'$elemMatch': { itemId: new ObjectId(itemId)}},
-            validDateFrom: {'$lte': new Date(datetime)},
-            validDateTo: {'$gte': new Date(datetime)}
+            'validFrom': {
+                '$lte': new Date(datetime)
+            },
+            'validTo': {
+                '$gte': new Date(datetime)
+            },
+            'stores': {
+                '$elemMatch': { 
+                    '_id': new ObjectId(storeId)
+                }
+            },
+            '$or': [
+                {
+                    'criteria.type': 'selected-product',
+                    'criteria.criterions': {
+                        '$elemMatch' : {
+                            'itemId': new ObjectId(itemId),
+                            'minimumQuantity': {
+                                '$lte': quantity   
+                            }
+                        }
+                    }
+                },
+                {
+                    'criteria.type': 'package',
+                    'criteria.criterions': {
+                        '$elemMatch' : {
+                            'itemId': new ObjectId(itemId)
+                        }
+                    }
+                }
+            ]
         };
 
         manager.read(query)

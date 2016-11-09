@@ -24,11 +24,8 @@ masterFinishedGoodsRouter.applyRoutes(server, "v1/master/finishedgoods/");
 var salesModuleRouter = require('./src/routers/v1/sales/sales-module-router');
 salesModuleRouter.applyRoutes(server, "v1/sales/docs/sales");  
 
-var salesRewardTypeRouter = require('./src/routers/v1/sales/reward-type-router');
-salesRewardTypeRouter.applyRoutes(server, "v1/sales/rewardtypes");
-
 var salesPromoRouter = require('./src/routers/v1/sales/promo-router');
-salesPromoRouter.applyRoutes(server, "v1/sales/docs/promos"); 
+salesPromoRouter.applyRoutes(server, "v1/sales/promos"); 
 
 server.listen(process.env.PORT, process.env.IP);
 console.log(`server created at ${process.env.IP}:${process.env.PORT}`)
