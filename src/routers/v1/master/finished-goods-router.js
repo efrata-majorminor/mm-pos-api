@@ -49,6 +49,32 @@ router.get('/:id', (request, response, next) => {
 
     })
 });
+ 
+router.get('/code/:code', (request, response, next) => {
+    db.get().then(db => {
+        var manager = new FinishedGoodsManager(db, {
+            username: 'router'
+        }); 
+        var query = request.query; 
+        var code = request.params.code; 
+        var query = request.query;
+        query.filter = { 
+            'code': code
+        }; 
+        manager.read(query)
+            .then(docs => { 
+                var result = resultFormatter.ok(apiVersion, 200, docs.data);
+                delete docs.data;
+                result.info = docs;
+                response.send(200, result);
+            })
+            .catch(e => {
+                var error = resultFormatter.fail(apiVersion, 400, e);
+                response.send(400, error);
+            })
+
+    })
+});
 
 router.post('/', (request, response, next) => {
     db.get().then(db => {
