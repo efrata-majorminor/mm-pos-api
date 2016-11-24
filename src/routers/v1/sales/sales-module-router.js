@@ -14,7 +14,11 @@ router.get('/', (request, response, next) => {
         });
 
         var query = request.query;
-
+        query.filter = {
+            //'isVoid' : false,
+            'isReturn': false
+        }
+        
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
