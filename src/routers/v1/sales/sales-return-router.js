@@ -1,21 +1,22 @@
 var Router = require('restify-router').Router;;
 var router = new Router();
-var FinishedGoodsManager = require('bateeq-module').master.FinishedGoodsManager;
+var SalesReturnManager = require('bateeq-module').sales.SalesReturnManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
+var ObjectId = require('mongodb').ObjectId;
 
 const apiVersion = '1.0.0';
 
 router.get('/', (request, response, next) => {
     db.get().then(db => {
-        var manager = new FinishedGoodsManager(db, {
+        var manager = new SalesReturnManager(db, {
             username: 'router'
         });
-        
+
         var query = request.query;
 
         manager.read(query)
-            .then(docs => { 
+            .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
                 delete docs.data;
                 result.info = docs;
@@ -31,16 +32,16 @@ router.get('/', (request, response, next) => {
 
 router.get('/:id', (request, response, next) => {
     db.get().then(db => {
-        var manager = new FinishedGoodsManager(db, {
+        var manager = new SalesReturnManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
 
         manager.getSingleById(id)
             .then(doc => {
                 var result = resultFormatter.ok(apiVersion, 200, doc);
-                response.send(200, result); 
+                response.send(200, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 400, e);
@@ -49,20 +50,28 @@ router.get('/:id', (request, response, next) => {
 
     })
 });
- 
-router.get('/code/:code', (request, response, next) => {
+
+router.get('/:storeid/:datefrom/:dateto', (request, response, next) => {
     db.get().then(db => {
-        var manager = new FinishedGoodsManager(db, {
+        var manager = new SalesReturnManager(db, {
             username: 'router'
-        }); 
-        var query = request.query; 
-        var code = request.params.code; 
+        });
+        // format date : yyyy/MM/dd
+        var storeid = request.params.storeid;
+        var datefrom = request.params.datefrom;
+        var dateto = request.params.dateto;
+
         var query = request.query;
-        query.filter = { 
-            'code': code
-        }; 
+        query.filter = {
+            storeId: new ObjectId(storeid),
+            date: {
+                $gte: new Date(datefrom),
+                $lte: new Date(dateto)
+            }
+        };
+
         manager.read(query)
-            .then(docs => { 
+            .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
                 delete docs.data;
                 result.info = docs;
@@ -78,15 +87,15 @@ router.get('/code/:code', (request, response, next) => {
 
 router.post('/', (request, response, next) => {
     db.get().then(db => {
-        var manager = new FinishedGoodsManager(db, {
+        var manager = new SalesReturnManager(db, {
             username: 'router'
         });
-        
+
         var data = request.body;
 
         manager.create(data)
             .then(docId => {
-                response.header('Location', `masters/items/${docId.toString()}`);
+                response.header('Location', `salesreturn/docs/sales/${docId.toString()}`);
                 var result = resultFormatter.ok(apiVersion, 201);
                 response.send(201, result);
             })
@@ -100,10 +109,10 @@ router.post('/', (request, response, next) => {
 
 router.put('/:id', (request, response, next) => {
     db.get().then(db => {
-        var manager = new FinishedGoodsManager(db, {
+        var manager = new SalesReturnManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
         var data = request.body;
 
@@ -122,10 +131,10 @@ router.put('/:id', (request, response, next) => {
 
 router.del('/:id', (request, response, next) => {
     db.get().then(db => {
-        var manager = new FinishedGoodsManager(db, {
+        var manager = new SalesReturnManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
         var data = request.body;
 
