@@ -14,7 +14,15 @@ router.get('/', (request, response, next) => {
         });
 
         var query = request.query;
-
+        query.filter = {
+            //'isVoid' : false,
+            //'isReturn': false
+        }
+        
+        query.order = {
+            '_updatedDate' : -1
+        }
+        
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);

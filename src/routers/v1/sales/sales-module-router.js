@@ -19,6 +19,10 @@ router.get('/', (request, response, next) => {
             'isReturn': false
         }
         
+        query.order = {
+            '_updatedDate' : -1
+        }
+        
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
