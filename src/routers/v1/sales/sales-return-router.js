@@ -96,6 +96,7 @@ router.post('/', (request, response, next) => {
         manager.create(data)
             .then(docId => {
                 response.header('Location', `salesreturn/docs/sales/${docId.toString()}`);
+                response.header('Id', `${docId.toString()}`);
                 var result = resultFormatter.ok(apiVersion, 201);
                 response.send(201, result);
             })
