@@ -15,8 +15,7 @@ router.get('/', (request, response, next) => {
 
         var query = request.query;
         query.filter = {
-            //'isVoid' : false,
-            //'isReturn': false
+            //'isVoid' : false
         }
         
         query.order = {
