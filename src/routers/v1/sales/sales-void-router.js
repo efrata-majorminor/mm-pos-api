@@ -14,9 +14,19 @@ router.get('/', (request, response, next) => {
         });
 
         var query = request.query;
-        query.filter = {
+
+        var filterCode = {};
+        if(query.code) {
+            filterCode = {
+                code : query.code
+            }
+        }
+
+        var filter = {
             isVoid: true
         };
+
+        query.filter =  { '$and': [filterCode, filter] };
 
         manager.read(query)
             .then(docs => {
@@ -53,8 +63,7 @@ router.get('/:id', (request, response, next) => {
 
     })
 });
-
- 
+  
 router.get('/:datefrom/:dateto', (request, response, next) => {
     db.get().then(db => {
         var manager = new SalesManager(db, {
