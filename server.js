@@ -23,9 +23,12 @@ masterFinishedGoodsRouter.applyRoutes(server, "v1/master/finishedgoods/");
 
 var salesModuleRouter = require('./src/routers/v1/sales/sales-module-router');
 salesModuleRouter.applyRoutes(server, "v1/sales/docs/sales");  
-
+ 
 var salesReturnModuleRouter = require('./src/routers/v1/sales/sales-return-router');
 salesReturnModuleRouter.applyRoutes(server, "v1/sales/docs/salesreturns");  
+ 
+var salesVoidRouter = require('./src/routers/v1/sales/sales-void-router');
+salesVoidRouter.applyRoutes(server, "v1/sales/docs/salesvoids");  
 
 var salesPromoRouter = require('./src/routers/v1/sales/promo-router');
 salesPromoRouter.applyRoutes(server, "v1/sales/promos"); 
