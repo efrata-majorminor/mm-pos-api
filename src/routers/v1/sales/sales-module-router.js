@@ -14,7 +14,15 @@ router.get('/', (request, response, next) => {
         });
 
         var query = request.query;
-
+        query.filter = {
+            //'isVoid' : false,
+            'isReturn': false
+        }
+        
+        query.order = {
+            '_updatedDate' : -1
+        }
+        
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
@@ -128,6 +136,7 @@ router.post('/', (request, response, next) => {
         manager.create(data)
             .then(docId => {
                 response.header('Location', `sales/docs/sales/${docId.toString()}`);
+                response.header('Id', `${docId.toString()}`);
                 var result = resultFormatter.ok(apiVersion, 201);
                 response.send(201, result);
             })

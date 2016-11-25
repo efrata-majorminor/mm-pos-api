@@ -4,7 +4,7 @@ var server = restify.createServer();
 
 server.use(restify.queryParser());
 server.use(restify.bodyParser()); 
-server.use(restify.CORS());
+server.use(restify.CORS({headers:["location", "id"]}));
 
 var masterStoreRouter = require('./src/routers/v1/master/store-router');
 masterStoreRouter.applyRoutes(server, "v1/master/stores");
