@@ -15,7 +15,7 @@ router.get('/', (request, response, next) => {
 
         var query = request.query;
         query.filter = {
-            //'isVoid' : false,
+            'isVoid' : false,
             'isReturn': false
         }
         
@@ -37,7 +37,7 @@ router.get('/', (request, response, next) => {
 
     })
 });
-
+  
 router.get('/:id', (request, response, next) => {
     db.get().then(db => {
         var manager = new SalesManager(db, {
@@ -49,34 +49,6 @@ router.get('/:id', (request, response, next) => {
         manager.getSingleById(id)
             .then(doc => {
                 var result = resultFormatter.ok(apiVersion, 200, doc);
-                response.send(200, result);
-            })
-            .catch(e => {
-                var error = resultFormatter.fail(apiVersion, 400, e);
-                response.send(400, error);
-            })
-
-    })
-});
-
-router.get('/:storename/:isTransByStoreName', (request, response, next) => {
-    db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
-
-        var storename = request.params.storename;
-
-        var query = request.query;
-        query.filter = {
-            "store.name": storename.toString()
-            
-        };
-        manager.read(query)
-            .then(docs => {
-                var result = resultFormatter.ok(apiVersion, 200, docs.data);
-                delete docs.data;
-                result.info = docs;
                 response.send(200, result);
             })
             .catch(e => {
@@ -106,7 +78,8 @@ router.get('/:storeid/:datefrom/:dateto/:shift', (request, response, next) => {
                 $gte: new Date(datefrom),
                 $lte: new Date(dateto)
             },
-            shift : shift.toString()
+            shift : shift.toString(),
+            'isVoid' : false
         };
 
         manager.read(query)
