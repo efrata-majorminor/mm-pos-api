@@ -14,9 +14,19 @@ router.get('/', (request, response, next) => {
         });
 
         var query = request.query;
-        query.filter = {
+
+        var filterCode = {};
+        if (query.code) {
+            filterCode = {
+                code: query.code
+            }
+        }
+
+        var filter = {
             isVoid: true
         };
+
+        query.filter = { '$and': [filterCode, filter] };
 
         manager.read(query)
             .then(docs => {
@@ -54,7 +64,6 @@ router.get('/:id', (request, response, next) => {
     })
 });
 
- 
 router.get('/:datefrom/:dateto', (request, response, next) => {
     db.get().then(db => {
         var manager = new SalesManager(db, {
@@ -63,14 +72,14 @@ router.get('/:datefrom/:dateto', (request, response, next) => {
         // format date : yyyy/MM/dd
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
-        
+
         var query = request.query;
         query.filter = {
             date: {
                 $gte: new Date(datefrom),
                 $lte: new Date(dateto)
             }
-        }; 
+        };
 
         manager.read(query)
             .then(docs => {
@@ -87,30 +96,25 @@ router.get('/:datefrom/:dateto', (request, response, next) => {
     })
 });
 
- 
+
 router.get('/:storename/:datefrom/:dateto/:shift', (request, response, next) => {
     db.get().then(db => {
         var manager = new SalesManager(db, {
             username: 'router'
         });
         // format date : yyyy/MM/dd
-        var storename ;
+        var storename;
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
-        var shift ;
+        var shift;
         var query = request.query;
 
         var filterStore = {};
         var filterShift = {};
-        var filterDate = {
-            date: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
-            }
-        };  
+        var filterDate = {};
         if (shift != "Semua") {
-            shift  = request.params.shift;
-            filterShift = { 
+            shift = request.params.shift;
+            filterShift = {
                 shift: shift.toString()
             };
         }
@@ -118,35 +122,49 @@ router.get('/:storename/:datefrom/:dateto/:shift', (request, response, next) => 
             storename = request.params.storename;
             filterStore = {
                 'store.name': storename.toString()
-            }; 
+            };
         }
 
-        if(shift=="Semua" && storename == "Semua")
-        {
-        query.filter = {
-            date: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
-            }
-        }; 
+        if (shift == "Semua" && storename == "Semua") {
+            query.filter = {
+                _updatedDate: {
+                    $gte: new Date(datefrom),
+                    $lte: new Date(dateto)
+                }
+            };
         }
-        else if(shift!="Semua" && storename != "Semua")
-        {
-        query.filter = {
-            '$and': [filterStore, filterShift, filterDate]
-        };
+        else if (shift != "Semua" && storename != "Semua") {
+            query.filter = {
+                _updatedDate: {
+                    $gte: new Date(datefrom),
+                    $lte: new Date(dateto)
+                }
+            };
+            query.filter = {
+                '$and': [filterStore, filterShift, filterDate]
+            };
         }
-        else if(shift!="Semua" && storename == "Semua")
-        {
-        query.filter = {
-            '$and': [filterShift, filterDate]
-        };
+        else if (shift != "Semua" && storename == "Semua") {
+            query.filter = {
+                _updatedDate: {
+                    $gte: new Date(datefrom),
+                    $lte: new Date(dateto)
+                }
+            };
+            query.filter = {
+                '$and': [filterShift, filterDate]
+            };
         }
-        else if(shift=="Semua" && storename != "Semua")
-        {
-        query.filter = {
-            '$and': [filterStore, filterDate]
-        };
+        else if (shift == "Semua" && storename != "Semua") {
+            query.filter = {
+                _updatedDate: {
+                    $gte: new Date(datefrom),
+                    $lte: new Date(dateto)
+                }
+            };
+            query.filter = {
+                '$and': [filterStore, filterDate]
+            };
         }
 
         manager.read(query)
@@ -206,7 +224,7 @@ router.put('/', (request, response, next) => {
             })
 
     })
-}); 
+});
 
 
 router.del('/:id', (request, response, next) => {
