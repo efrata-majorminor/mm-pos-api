@@ -59,20 +59,22 @@ router.get('/:id', passport, (request, response, next) => {
     })
 });
 
-router.get('/:storeid/:datefrom/:dateto', passport, (request, response, next) => {
+router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, next) => {
     db.get().then(db => {
         var manager = new SalesReturnManager(db, request.user);
         // format date : yyyy/MM/dd
         var storeid = request.params.storeid;
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
+        var shift = request.params.shift;
 
         var query = request.query;
         var filter = {
-            storeId: new ObjectId(storeid),
-            date: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
+            "storeId": new ObjectId(storeid),
+            "salesDocReturn.shift": shift,
+            "date": {
+                "$gte": new Date(datefrom),
+                "$lte": new Date(dateto)
             }
         };
         query.filter = !query.filter ? filter : JSON.parse(query.filter);
