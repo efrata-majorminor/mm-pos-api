@@ -5,9 +5,14 @@
   "main": "server.js",
   "dependencies": {
     "bateeq-module": "git+https://github.com/danliris/bateeq-module.git#dev",
+    "jsonwebtoken": "^7.1.9",
     "js-toolkit": "git+https://github.com/pinkgorilla/js-toolkit.git",
+    "module-toolkit": "git+https://github.com/pinkgorilla/module-toolkit.git",
     "mongo-factory": "^1.0.0",
     "mongodb": "^2.1.18",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "passport-local": "^1.0.0",
     "restify": "^4.1.1",
     "restify-router": "^0.2.1"
   },

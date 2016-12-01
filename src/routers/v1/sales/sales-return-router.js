@@ -4,23 +4,26 @@ var SalesReturnManager = require('bateeq-module').sales.SalesReturnManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 var ObjectId = require('mongodb').ObjectId;
+var passport = require('../../../passports/jwt-passport');
 
 const apiVersion = '1.0.0';
 
-router.get('/', (request, response, next) => {
+router.get('/', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesReturnManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesReturnManager(db, request.user);
 
         var query = request.query;
-        query.filter = {
+        
+        var filter = {
             //'isVoid' : false
         }
         
         query.order = {
             '_updatedDate' : -1
         }
+        
+        
+        query.filter = !query.filter ? filter : JSON.parse(query.filter);
         
         manager.read(query)
             .then(docs => {
@@ -37,11 +40,9 @@ router.get('/', (request, response, next) => {
     })
 });
 
-router.get('/:id', (request, response, next) => {
+router.get('/:id', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesReturnManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesReturnManager(db, request.user);
 
         var id = request.params.id;
 
@@ -58,24 +59,25 @@ router.get('/:id', (request, response, next) => {
     })
 });
 
-router.get('/:storeid/:datefrom/:dateto', (request, response, next) => {
+router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesReturnManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesReturnManager(db, request.user);
         // format date : yyyy/MM/dd
         var storeid = request.params.storeid;
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
+        var shift = request.params.shift;
 
         var query = request.query;
-        query.filter = {
-            storeId: new ObjectId(storeid),
-            date: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
+        var filter = {
+            "storeId": new ObjectId(storeid),
+            "salesDocReturn.shift": shift,
+            "date": {
+                "$gte": new Date(datefrom),
+                "$lte": new Date(dateto)
             }
         };
+        query.filter = !query.filter ? filter : JSON.parse(query.filter);
 
         manager.read(query)
             .then(docs => {
@@ -92,11 +94,9 @@ router.get('/:storeid/:datefrom/:dateto', (request, response, next) => {
     })
 });
 
-router.post('/', (request, response, next) => {
+router.post('/', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesReturnManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesReturnManager(db, request.user);
 
         var data = request.body;
 
@@ -115,11 +115,9 @@ router.post('/', (request, response, next) => {
     })
 });
 
-router.put('/:id', (request, response, next) => {
+router.put('/:id', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesReturnManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesReturnManager(db, request.user);
 
         var id = request.params.id;
         var data = request.body;
@@ -137,11 +135,9 @@ router.put('/:id', (request, response, next) => {
     })
 });
 
-router.del('/:id', (request, response, next) => {
+router.del('/:id', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesReturnManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesReturnManager(db, request.user);
 
         var id = request.params.id;
         var data = request.body;
