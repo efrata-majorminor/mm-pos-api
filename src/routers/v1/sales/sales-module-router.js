@@ -13,11 +13,17 @@ router.get('/', passport, (request, response, next) => {
         var manager = new SalesManager(db, request.user);
 
         var query = request.query;
+        query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filter = {
             'isVoid' : false,
             'isReturn': false
-        }
-        query.filter = !query.filter ? filter : JSON.parse(query.filter);
+        } 
+        query.filter = {
+            '$and': [
+                query.filter,
+                filter
+            ]
+        }; 
         
         query.order = {
             '_updatedDate' : -1
@@ -68,6 +74,7 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         var shift = request.params.shift;
 
         var query = request.query;
+        query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filter = {
             storeId: new ObjectId(storeid),
             date: {
@@ -77,8 +84,13 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
             shift : shift.toString(),
             'isVoid' : false
         };
-        query.filter = !query.filter ? filter : JSON.parse(query.filter);
-         
+        query.filter = {
+            '$and': [
+                query.filter,
+                filter
+            ]
+        }; 
+                 
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
