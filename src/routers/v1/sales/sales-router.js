@@ -14,13 +14,6 @@ router.get('/', passport, (request, response, next) => {
 
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
-        var stores = [];
-        for(var store of request.user.stores) {
-            stores.push(new ObjectId(store._id));
-        }
-        var filterAuth = {
-            "store._id" : { "$in" : stores }
-        }
         var filter = {
             'isVoid' : false,
             'isReturn': false
@@ -28,7 +21,6 @@ router.get('/', passport, (request, response, next) => {
         query.filter = {
             '$and': [
                 query.filter,
-                filterAuth,
                 filter
             ]
         }; 
@@ -83,13 +75,6 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
 
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
-        var stores = [];
-        for(var store of request.user.stores) {
-            stores.push(new ObjectId(store._id));
-        }
-        var filterAuth = {
-            "store._id" : { "$in" : stores }
-        }
         var filter = {
             storeId: new ObjectId(storeid),
             date: {
@@ -102,7 +87,6 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         query.filter = {
             '$and': [
                 query.filter,
-                filterAuth,
                 filter
             ]
         }; 

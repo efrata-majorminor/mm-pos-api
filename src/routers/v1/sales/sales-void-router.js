@@ -14,13 +14,6 @@ router.get('/', passport, (request, response, next) => {
 
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
-        var stores = [];
-        for(var store of request.user.stores) {
-            stores.push(new ObjectId(store._id));
-        }
-        var filterAuth = {
-            "store._id" : { "$in" : stores }
-        }
         var filterCode = {};
         if (query.code) {
             filterCode = {
@@ -33,7 +26,6 @@ router.get('/', passport, (request, response, next) => {
         query.filter = {
             '$and': [
                 query.filter,
-                filterAuth,
                 filterCode,
                 filter
             ]
@@ -82,13 +74,6 @@ router.get('/:datefrom/:dateto', passport, (request, response, next) => {
  
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
-        var stores = [];
-        for(var store of request.user.stores) {
-            stores.push(new ObjectId(store._id));
-        }
-        var filterAuth = {
-            "store._id" : { "$in" : stores }
-        }
         var filter = {
             date: {
                 $gte: new Date(datefrom),
@@ -98,7 +83,6 @@ router.get('/:datefrom/:dateto', passport, (request, response, next) => {
         query.filter = {
             '$and': [
                 query.filter,
-                filterAuth,
                 filter
             ]
         };
@@ -129,14 +113,6 @@ router.get('/:storename/:datefrom/:dateto/:shift', passport, (request, response,
         var shift;
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
-          
-        var stores = [];
-        for(var store of request.user.stores) {
-            stores.push(new ObjectId(store._id));
-        }
-        var filterAuth = {
-            "store._id" : { "$in" : stores }
-        }
         
         var filterStore = {};
         var filterShift = {};
@@ -195,10 +171,7 @@ router.get('/:storename/:datefrom/:dateto/:shift', passport, (request, response,
                 '$and': [filterStore, filterDate]
             };
         }
-         
-        query.filter = {
-            '$and': [query.filter, filterAuth]
-        };
+        
         // var filterDate = {
         //     //  _updatedDate: {
         //     //     $gte: new Date(datefrom),
@@ -208,7 +181,6 @@ router.get('/:storename/:datefrom/:dateto/:shift', passport, (request, response,
         // query.filter = {
         //     '$and': [
         //         query.filter,
-        //         filterAuth,
         //         filterStore,
         //         filterShift,
         //         filterDate
