@@ -39,6 +39,9 @@ storeSalesRouter.applyRoutes(server, "v1/store/:storeid/sales/docs/sales");
 
 var storeSalesReturnRouter = require('./src/routers/v1/store/sales/sales-return-router');
 storeSalesReturnRouter.applyRoutes(server, "v1/store/:storeid/sales/docs/salesreturns");
+ 
+var storeSalesVoidRouter = require('./src/routers/v1/store/sales/sales-void-router');
+storeSalesVoidRouter.applyRoutes(server, "v1/store/:storeid/sales/docs/salesvoids");
 
 server.listen(process.env.PORT, process.env.IP);
 console.log(`server created at ${process.env.IP}:${process.env.PORT}`)
