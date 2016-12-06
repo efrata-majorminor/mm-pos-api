@@ -22,17 +22,23 @@ masterItemRouter.applyRoutes(server, "v1/master/items/");
 var masterFinishedGoodsRouter = require('./src/routers/v1/master/finished-goods-router');
 masterFinishedGoodsRouter.applyRoutes(server, "v1/master/finishedgoods/"); 
 
-var salesModuleRouter = require('./src/routers/v1/sales/sales-module-router');
-salesModuleRouter.applyRoutes(server, "v1/sales/docs/sales");  
+var salesRouter = require('./src/routers/v1/sales/sales-router');
+salesRouter.applyRoutes(server, "v1/sales/docs/sales");  
  
-var salesReturnModuleRouter = require('./src/routers/v1/sales/sales-return-router');
-salesReturnModuleRouter.applyRoutes(server, "v1/sales/docs/salesreturns");  
+var salesReturnRouter = require('./src/routers/v1/sales/sales-return-router');
+salesReturnRouter.applyRoutes(server, "v1/sales/docs/salesreturns");  
  
 var salesVoidRouter = require('./src/routers/v1/sales/sales-void-router');
 salesVoidRouter.applyRoutes(server, "v1/sales/docs/salesvoids");  
 
 var salesPromoRouter = require('./src/routers/v1/sales/promo-router');
 salesPromoRouter.applyRoutes(server, "v1/sales/promos"); 
+
+var storeSalesRouter = require('./src/routers/v1/store/sales/sales-router');
+storeSalesRouter.applyRoutes(server, "v1/store/:storeid/sales/docs/sales");
+
+var storeSalesReturnRouter = require('./src/routers/v1/store/sales/sales-return-router');
+storeSalesReturnRouter.applyRoutes(server, "v1/store/:storeid/sales/docs/salesreturns");
 
 server.listen(process.env.PORT, process.env.IP);
 console.log(`server created at ${process.env.IP}:${process.env.PORT}`)

@@ -4,29 +4,32 @@ var SalesManager = require('bateeq-module').sales.SalesManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 var ObjectId = require('mongodb').ObjectId;
+var passport = require('../../../passports/jwt-passport');
 
 const apiVersion = '1.0.0';
 
-router.get('/', (request, response, next) => {
+router.get('/', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesManager(db, request.user);
 
         var query = request.query;
-
+        query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filterCode = {};
         if (query.code) {
             filterCode = {
                 code: query.code
             }
         }
-
         var filter = {
             isVoid: true
-        };
-
-        query.filter = { '$and': [filterCode, filter] };
+        }; 
+        query.filter = {
+            '$and': [
+                query.filter,
+                filterCode,
+                filter
+            ]
+        };  
 
         manager.read(query)
             .then(docs => {
@@ -43,11 +46,9 @@ router.get('/', (request, response, next) => {
     })
 });
 
-router.get('/:id', (request, response, next) => {
+router.get('/:id', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesManager(db, request.user);
 
         var id = request.params.id;
 
@@ -64,21 +65,26 @@ router.get('/:id', (request, response, next) => {
     })
 });
 
-router.get('/:datefrom/:dateto', (request, response, next) => {
+router.get('/:datefrom/:dateto', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesManager(db, request.user);
         // format date : yyyy/MM/dd
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
-
+ 
         var query = request.query;
-        query.filter = {
+        query.filter = !query.filter ? {} : JSON.parse(query.filter);
+        var filter = {
             date: {
                 $gte: new Date(datefrom),
                 $lte: new Date(dateto)
             }
+        };
+        query.filter = {
+            '$and': [
+                query.filter,
+                filter
+            ]
         };
 
         manager.read(query)
@@ -97,18 +103,17 @@ router.get('/:datefrom/:dateto', (request, response, next) => {
 });
 
 
-router.get('/:storename/:datefrom/:dateto/:shift', (request, response, next) => {
+router.get('/:storename/:datefrom/:dateto/:shift', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesManager(db, request.user);
         // format date : yyyy/MM/dd
         var storename;
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
         var shift;
         var query = request.query;
-
+        query.filter = !query.filter ? {} : JSON.parse(query.filter);
+        
         var filterStore = {};
         var filterShift = {};
         var filterDate = {};
@@ -166,7 +171,22 @@ router.get('/:storename/:datefrom/:dateto/:shift', (request, response, next) => 
                 '$and': [filterStore, filterDate]
             };
         }
-
+        
+        // var filterDate = {
+        //     //  _updatedDate: {
+        //     //     $gte: new Date(datefrom),
+        //     //     $lte: new Date(dateto)
+        //     // }
+        // };
+        // query.filter = {
+        //     '$and': [
+        //         query.filter,
+        //         filterStore,
+        //         filterShift,
+        //         filterDate
+        //     ]
+        // };
+        
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
@@ -182,11 +202,9 @@ router.get('/:storename/:datefrom/:dateto/:shift', (request, response, next) => 
     })
 });
 
-router.post('/', (request, response, next) => {
+router.post('/', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesManager(db, request.user);
 
         var data = request.body;
 
@@ -204,11 +222,9 @@ router.post('/', (request, response, next) => {
     })
 });
 
-router.put('/', (request, response, next) => {
+router.put('/', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesManager(db, request.user);
 
         var id = request.params.id;
         var data = request.body;
@@ -227,11 +243,9 @@ router.put('/', (request, response, next) => {
 });
 
 
-router.del('/:id', (request, response, next) => {
+router.del('/:id', passport, (request, response, next) => {
     db.get().then(db => {
-        var manager = new SalesManager(db, {
-            username: 'router'
-        });
+        var manager = new SalesManager(db, request.user);
 
         var id = request.params.id;
         var data = request.body;
