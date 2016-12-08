@@ -81,7 +81,7 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
                 $gte: new Date(datefrom),
                 $lte: new Date(dateto)
             },
-            shift : shift.toString(),
+            shift : parseInt(shift),
             'isVoid' : false
         };
         query.filter = {

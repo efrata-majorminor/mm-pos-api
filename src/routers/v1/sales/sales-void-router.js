@@ -120,7 +120,7 @@ router.get('/:storename/:datefrom/:dateto/:shift', passport, (request, response,
         if (shift != "Semua") {
             shift = request.params.shift;
             filterShift = {
-                shift: shift.toString()
+                shift: parseInt(shift)
             };
         }
         if (storename != "Semua") {
