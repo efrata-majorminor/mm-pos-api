@@ -131,6 +131,7 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
             'storeId': new ObjectId(storeid)
         };
         var filterDate = {
+            isVoid: true,
             _updatedDate: {
                 $gte: new Date(datefrom),
                 $lte: new Date(dateto)
