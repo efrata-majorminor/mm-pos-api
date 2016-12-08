@@ -15,7 +15,7 @@ router.get('/', passport, (request, response, next) => {
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filter = {
-            //'isVoid' : false
+            'isVoid' : false
         }
         query.filter = {
             '$and': [
@@ -79,7 +79,8 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
             "date": {
                 "$gte": new Date(datefrom),
                 "$lte": new Date(dateto)
-            }
+            },
+            'isVoid' : false
         };
         query.filter = {
             '$and': [

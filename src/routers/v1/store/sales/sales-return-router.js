@@ -20,7 +20,7 @@ router.get('/', passport, (request, response, next) => {
             "salesDocReturn.storeId" : new ObjectId(storeid)
         }
         var filter = {
-            //'isVoid' : false
+            'isVoid' : false
         }
         query.filter = {
             '$and': [
