@@ -79,6 +79,7 @@ router.get('/:datefrom/:dateto', passport, (request, response, next) => {
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filter = {
+            isVoid: true,
             date: {
                 $gte: new Date(datefrom),
                 $lte: new Date(dateto)
@@ -107,90 +108,39 @@ router.get('/:datefrom/:dateto', passport, (request, response, next) => {
 });
 
 
-router.get('/:storename/:datefrom/:dateto/:shift', passport, (request, response, next) => {
+router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, next) => {
     db.get().then(db => {
         var manager = new SalesManager(db, request.user);
         // format date : yyyy/MM/dd
-        var storename;
+        var storeid = request.params.storeid;
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
-        var shift;
+        var shift = parseInt(request.params.shift);
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
         
-        var filterStore = {};
         var filterShift = {};
         var filterDate = {};
-        if (shift != "Semua") {
-            shift = request.params.shift;
+        if (shift != 0) {
             filterShift = {
-                shift: parseInt(shift)
+                shift: shift
             };
-        }
-        if (storename != "Semua") {
-            storename = request.params.storename;
-            filterStore = {
-                'store.name': storename.toString()
-            };
-        }
-
-        if (shift == "Semua" && storename == "Semua") {
-            query.filter = {
-                _updatedDate: {
-                    $gte: new Date(datefrom),
-                    $lte: new Date(dateto)
-                }
-            };
-        }
-        else if (shift != "Semua" && storename != "Semua") {
-            query.filter = {
-                _updatedDate: {
-                    $gte: new Date(datefrom),
-                    $lte: new Date(dateto)
-                }
-            };
-            query.filter = {
-                '$and': [filterStore, filterShift, filterDate]
-            };
-        }
-        else if (shift != "Semua" && storename == "Semua") {
-            query.filter = {
-                _updatedDate: {
-                    $gte: new Date(datefrom),
-                    $lte: new Date(dateto)
-                }
-            };
-            query.filter = {
-                '$and': [filterShift, filterDate]
-            };
-        }
-        else if (shift == "Semua" && storename != "Semua") {
-            query.filter = {
-                _updatedDate: {
-                    $gte: new Date(datefrom),
-                    $lte: new Date(dateto)
-                }
-            };
-            query.filter = {
-                '$and': [filterStore, filterDate]
-            };
+        } 
+        
+        var filterStore = {
+            'storeId': new ObjectId(storeid)
+        };
+        var filterDate = {
+            _updatedDate: {
+                $gte: new Date(datefrom),
+                $lte: new Date(dateto)
+            }
         }
         
-        // var filterDate = {
-        //     //  _updatedDate: {
-        //     //     $gte: new Date(datefrom),
-        //     //     $lte: new Date(dateto)
-        //     // }
-        // };
-        // query.filter = {
-        //     '$and': [
-        //         query.filter,
-        //         filterStore,
-        //         filterShift,
-        //         filterDate
-        //     ]
-        // };
-        
+        query.filter = {
+            '$and': [query.filter, filterStore, filterShift, filterDate]
+        };
+                
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
