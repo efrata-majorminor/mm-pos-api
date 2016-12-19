@@ -13,6 +13,16 @@ router.get('/', (request, response, next) => {
         });
         
         var query = request.query;
+        query.filter = !query.filter ? {} : JSON.parse(query.filter);
+        var filter = {
+            '_active' : true
+        } 
+        query.filter = {
+            '$and': [
+                query.filter,
+                filter
+            ]
+        }; 
 
         manager.read(query)
             .then(docs => { 
