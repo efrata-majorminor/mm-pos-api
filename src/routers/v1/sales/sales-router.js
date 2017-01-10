@@ -91,7 +91,7 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
             ]
         }; 
                  
-        manager.read(query)
+        manager.readAll(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
                 delete docs.data;
