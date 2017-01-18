@@ -67,7 +67,7 @@ router.get('/returnables', passport, (request, response, next) => {
         query.filter = {
             '$and': [
                 query.filter,
-                // filterStore,
+                // filterStore, 
                 filter
             ]
         }; 
