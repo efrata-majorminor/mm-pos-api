@@ -75,17 +75,26 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filter = {
             "storeId": new ObjectId(storeid),
-            "salesDocReturn.shift": parseInt(shift),
             "date": {
                 "$gte": new Date(datefrom),
                 "$lte": new Date(dateto)
             },
             'isVoid' : false
         };
+
+        
+        var filterShift = {};
+        if (shift != 0) {
+            filterShift = {
+                "salesDocReturn.shift": parseInt(shift)
+            };
+        } 
+
         query.filter = {
             '$and': [
                 query.filter,
-                filter
+                filter,
+                filterShift
             ]
         }; 
      

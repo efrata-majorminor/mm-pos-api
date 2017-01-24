@@ -15,20 +15,20 @@ router.get('/', passport, (request, response, next) => {
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filter = {
-            'isVoid' : false,
+            'isVoid': false,
             'isReturn': false
-        } 
+        }
         query.filter = {
             '$and': [
                 query.filter,
                 filter
             ]
-        }; 
-        
+        };
+
         query.order = {
-            '_updatedDate' : -1
+            '_updatedDate': -1
         }
-        
+
         manager.read(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
@@ -43,7 +43,7 @@ router.get('/', passport, (request, response, next) => {
 
     })
 });
-  
+
 router.get('/:id', passport, (request, response, next) => {
     db.get().then(db => {
         var manager = new SalesManager(db, request.user);
@@ -62,7 +62,7 @@ router.get('/:id', passport, (request, response, next) => {
 
     })
 });
- 
+
 //getAllSalesByFilter
 router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, next) => {
     db.get().then(db => {
@@ -81,16 +81,26 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
                 $gte: new Date(datefrom),
                 $lte: new Date(dateto)
             },
-            shift : parseInt(shift),
-            'isVoid' : false
+            'isVoid': false
         };
+
+
+
+        var filterShift = {};
+        if (shift != 0) {
+            filterShift = {
+                shift: parseInt(shift)
+            };
+        }
+
         query.filter = {
             '$and': [
                 query.filter,
-                filter
+                filter,
+                filterShift
             ]
-        }; 
-                 
+        };
+
         manager.readAll(query)
             .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
@@ -105,7 +115,31 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
 
     })
 });
- 
+
+router.get('/:datefrom/:dateto/:groupby', passport, (request, response, next) => {
+    db.get().then(db => {
+        var manager = new SalesManager(db, request.user);
+        // format date : yyyy/MM/dd
+        var datefrom = request.params.datefrom;
+        var dateto = request.params.dateto;
+        var groupby = request.params.groupby || "";
+
+        var result = {};
+        if (groupby.toLowerCase() == "pos")
+            result = manager.omsetReportPos(datefrom, dateto);
+        else if (groupby.toLowerCase() == "store")
+            result = manager.omsetReportStore(datefrom, dateto);
+
+        result.toArray().then((docs) => {
+            var result = resultFormatter.ok(apiVersion, 200, docs);
+            result.info = docs;
+            response.send(200, result);
+        }).catch(e => {
+            var error = resultFormatter.fail(apiVersion, 400, e);
+            response.send(400, error);
+        })
+    })
+});
 
 router.post('/', passport, (request, response, next) => {
     db.get().then(db => {
@@ -126,7 +160,7 @@ router.post('/', passport, (request, response, next) => {
             })
 
     })
-}); 
+});
 
 router.put('/:id', passport, (request, response, next) => {
     db.get().then(db => {
@@ -146,7 +180,7 @@ router.put('/:id', passport, (request, response, next) => {
             })
 
     })
-}); 
+});
 
 router.del('/:id', passport, (request, response, next) => {
     db.get().then(db => {
