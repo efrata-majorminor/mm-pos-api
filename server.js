@@ -8,7 +8,7 @@ server.use(json2xls.middleware);
 
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
-//server.use(restify.CORS({ headers: ["location", "id"] }));
+server.use(restify.CORS({ headers: ["location", "id"] }));
 
 server.use(restify.CORS({
     headers: ['Content-Disposition']
