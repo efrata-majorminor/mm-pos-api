@@ -44,7 +44,7 @@ router.get('/', passport, (request, response, next) => {
                 filterShift
             ]
         };
-        
+
         var shiftTemp;
         if (shift == 0) {
             shiftTemp = "Semua";
@@ -68,13 +68,10 @@ router.get('/', passport, (request, response, next) => {
                 var totalCashAmount = 0;
                 var totalCardAmount = 0;
                 var totalVoucher = 0;
-                var totalOmsetBruto = 0;
                 var sumTotalOmsetBruto = 0;
-                var totalOmsetPenjual = 0;
                 var sumTotalDiskonPenjual = 0;
-                var totalMargin = 0;
+                var totalOmsetPenjual = 0;
                 var sumTotalMargin = 0;
-                var totalOmsetNetto = 0;
                 var sumTotalOmsetNetto = 0;
                 var dateFormat = "DD MMM YYYY";
                 var locale = 'id-ID';
@@ -82,6 +79,9 @@ router.get('/', passport, (request, response, next) => {
                 moment.locale(locale);
 
                 for (var salesPerDay of docs.data) {
+                    var totalMargin = 0;
+                    var totalOmsetBruto = 0;
+                    var totalOmsetNetto = 0;
                     var result = {};
                     result["Toko"] = storeName;
                     result["Shift"] = shiftTemp;
@@ -95,9 +95,9 @@ router.get('/', passport, (request, response, next) => {
                     for (var item of salesPerDay.items) {
                         var detail = {};
                         detail.harga = item.price;
-                        detail.quantity = item.quantity;
+                        detail.quantity = parseInt(item.quantity);
                         detail.omsetBrutto = parseInt(detail.harga) * parseInt(detail.quantity);
-                        totalOmsetBruto = detail.omsetBrutto;
+                        totalOmsetBruto += parseInt(detail.omsetBrutto);
                         detail.discount1Percentage = item.discount1;
                         detail.discount1Nominal = parseInt(detail.omsetBrutto) * parseInt(detail.discount1Percentage) / 100;
                         detail.discount1Netto = parseInt(detail.omsetBrutto) - parseInt(detail.discount1Nominal);
@@ -113,8 +113,8 @@ router.get('/', passport, (request, response, next) => {
                         detail.discountMarginNominal = parseInt(detail.discountSpecialNetto) * parseInt(detail.discountMarginPercentage) / 100;
                         detail.discountMarginNetto = parseInt(detail.discountSpecialNetto) - parseInt(detail.discountMarginNominal);
                         detail.total = parseInt(detail.discountMarginNetto);
-                        totalMargin = detail.discountMarginNominal;
-                        totalOmsetNetto = detail.discountMarginNetto;
+                        totalMargin += parseInt(detail.discountMarginNominal);
+                        totalOmsetNetto += parseInt(detail.discountMarginNetto);
                     }
                     totalOmsetPenjual = parseInt(salesPerDay.subTotal) * parseInt(salesPerDay.discount) / 100;
                     result["Cash Amount"] = parseInt(salesPerDay.salesDetail.cashAmount);
