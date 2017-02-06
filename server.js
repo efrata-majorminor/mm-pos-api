@@ -8,11 +8,7 @@ server.use(json2xls.middleware);
 
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
-server.use(restify.CORS({ headers: ["location", "id"] }));
-
-server.use(restify.CORS({
-    headers: ['Content-Disposition']
-}));
+server.use(restify.CORS({ headers: ["location", "id", "Content-Disposition"] }));
 
 var masterStoreRouter = require('./src/routers/v1/master/store-router');
 masterStoreRouter.applyRoutes(server, "v1/master/stores");
