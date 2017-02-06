@@ -114,9 +114,10 @@ router.get('/', passport, (request, response, next) => {
                         detail.discountMarginNetto = parseInt(detail.discountSpecialNetto) - parseInt(detail.discountMarginNominal);
                         detail.total = parseInt(detail.discountMarginNetto);
                         totalMargin += parseInt(detail.discountMarginNominal);
-                        totalOmsetNetto += parseInt(detail.discountMarginNetto);
+                       // totalOmsetNetto += parseInt(detail.discountMarginNetto);
                         totalDiskonPenjual += parseInt(detail.discount1Nominal) + parseInt(detail.discount2Nominal) + parseInt(detail.discountNominal) + parseInt(detail.discountSpecialNominal)  
                     }
+                    totalOmsetNetto= parseInt(salesPerDay.grandTotal);
                     totalDiskonPenjual = parseInt(totalDiskonPenjual) + (parseInt(salesPerDay.subTotal) * parseInt(salesPerDay.discount) / 100);
                     result["Cash Amount"] = parseInt(salesPerDay.salesDetail.cashAmount);
                     result["Card Amount"] = parseInt(salesPerDay.salesDetail.cardAmount);
