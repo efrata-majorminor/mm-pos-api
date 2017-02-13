@@ -8,7 +8,9 @@
 
     "jsonwebtoken": "^7.1.9",
     "js-toolkit": "git+https://github.com/pinkgorilla/js-toolkit.git",
+    "json2xls": "^0.1.2",
     "module-toolkit": "git+https://github.com/pinkgorilla/module-toolkit.git",
+    "moment": "^2.16.0",
     "mongo-factory": "^1.0.0",
     "mongodb": "^2.1.18",
     "passport": "^0.3.2",
