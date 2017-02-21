@@ -16,7 +16,7 @@ router.get('/', passport, (request, response, next) => {
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
         var shift = request.params.shift;
-
+             
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
         var filter = {
@@ -85,7 +85,7 @@ router.get('/', passport, (request, response, next) => {
                     var result = {};
                     result["Toko"] = storeName;
                     result["Shift"] = shiftTemp;
-                    result["Tanggal"] = moment(salesPerDay.date).format(dateFormat);
+                    result["Tanggal"] = moment(salesPerDay.date).zone(datefrom).format(dateFormat);
                     result["No Pembayaran"] = salesPerDay.code;
                     result["Tipe Pembayaran"] = salesPerDay.salesDetail.paymentType;
                     result["Kartu"] = salesPerDay.salesDetail.card ? salesPerDay.salesDetail.card : "";
