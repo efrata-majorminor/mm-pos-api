@@ -46,6 +46,9 @@ storeSalesReturnRouter.applyRoutes(server, "v1/store/:storeid/sales/docs/salesre
 var storeSalesVoidRouter = require('./src/routers/v1/store/sales/sales-void-router');
 storeSalesVoidRouter.applyRoutes(server, "v1/store/:storeid/sales/docs/salesvoids");
 
+var reportSales = require('./src/routers/v1/sales/report-sales-router');
+reportSales.applyRoutes(server, "v1/sales/docs/sales/reports/daily");
+
 var reportSalesPayment = require('./src/routers/v1/sales/report-sales-payment-router');
 reportSalesPayment.applyRoutes(server, "v1/sales/docs/sales/reports/:storeid/:datefrom/:dateto/:shift");
 
