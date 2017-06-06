@@ -114,6 +114,46 @@ router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) =>
     })
 });
 
+router.get('/all/:datetime/:storeid', (request, response, next) => {
+    db.get().then(db => {
+        var manager = new PromoManager(db, {
+            username: 'router'
+        });
+        var datetime = new Date(request.params.datetime);
+        var storeId = request.params.storeid;
+        var query = request.query;
+
+        query.filter = {
+            '_active': true,
+            '_deleted': false
+        };
+
+        manager.read(query)
+            .then(docs => {
+                var data = [];
+                for (var item of docs.data) {
+                    var validFrom = new Date(item.validFrom);
+                    var validTo = new Date(item.validTo);
+
+                    if (datetime.getTime() >= validFrom.getTime() && datetime.getTime() <= validTo.getTime()) {
+                        for (var store of item.stores) {
+                            if (storeId === store.code) {
+                                data.push(item);
+                                break;
+                            }
+                        }
+                    }
+                }
+                var result = resultFormatter.ok(apiVersion, 200, data);
+                response.send(200, result);
+            })
+            .catch(e => {
+                var error = resultFormatter.fail(apiVersion, 400, e);
+                response.send(400, error);
+            })
+    });
+});
+
 router.post('/', (request, response, next) => {
     db.get().then(db => {
         var manager = new PromoManager(db, {
