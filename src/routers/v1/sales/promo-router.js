@@ -125,7 +125,8 @@ router.get('/all/:datetime/:storeid', (request, response, next) => {
 
         query.filter = {
             '_active': true,
-            '_deleted': false
+            '_deleted': false,
+            'stores.code' : storeId
         };
 
         manager.read(query)
@@ -135,13 +136,9 @@ router.get('/all/:datetime/:storeid', (request, response, next) => {
                     var validFrom = new Date(item.validFrom);
                     var validTo = new Date(item.validTo);
 
-                    if (datetime.getTime() >= validFrom.getTime() && datetime.getTime() <= validTo.getTime()) {
-                        for (var store of item.stores) {
-                            if (storeId === store.code) {
-                                data.push(item);
-                                break;
-                            }
-                        }
+                    if (datetime.getTime() >= validFrom.getTime() && 
+                            datetime.getTime() <= validTo.getTime()) {
+                        data.push(item);
                     }
                 }
                 var result = resultFormatter.ok(apiVersion, 200, data);
