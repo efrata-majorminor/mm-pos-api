@@ -12,11 +12,11 @@ router.get('/', (request, response, next) => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
-        
+
         var query = request.query;
 
         manager.read(query)
-            .then(docs => { 
+            .then(docs => {
                 var result = resultFormatter.ok(apiVersion, 200, docs.data);
                 delete docs.data;
                 result.info = docs;
@@ -35,13 +35,13 @@ router.get('/:id', (request, response, next) => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
 
         manager.getSingleById(id)
             .then(doc => {
                 var result = resultFormatter.ok(apiVersion, 200, doc);
-                response.send(200, result); 
+                response.send(200, result);
             })
             .catch(e => {
                 var error = resultFormatter.fail(apiVersion, 400, e);
@@ -56,13 +56,13 @@ router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) =>
         var manager = new PromoManager(db, {
             username: 'router'
         });
-        
-        var storeId = request.params.storeId; 
+
+        var storeId = request.params.storeId;
         //Date Format : yyyy-MM-ddThh:mm:ss
         var datetime = request.params.datetime;
-        var itemId = request.params.itemId;  
+        var itemId = request.params.itemId;
         var quantity = parseInt(request.params.quantity);
-        
+
         var query = request.query;
         query.filter = {
             'validFrom': {
@@ -72,7 +72,7 @@ router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) =>
                 '$gte': new Date(datetime)
             },
             'stores': {
-                '$elemMatch': { 
+                '$elemMatch': {
                     '_id': new ObjectId(storeId)
                 }
             },
@@ -80,10 +80,10 @@ router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) =>
                 {
                     'criteria.type': 'selected-product',
                     'criteria.criterions': {
-                        '$elemMatch' : {
+                        '$elemMatch': {
                             'itemId': new ObjectId(itemId),
                             'minimumQuantity': {
-                                '$lte': quantity   
+                                '$lte': quantity
                             }
                         }
                     }
@@ -91,7 +91,7 @@ router.get('/:storeId/:datetime/:itemId/:quantity', (request, response, next) =>
                 {
                     'criteria.type': 'package',
                     'criteria.criterions': {
-                        '$elemMatch' : {
+                        '$elemMatch': {
                             'itemId': new ObjectId(itemId)
                         }
                     }
@@ -119,14 +119,16 @@ router.get('/all/:datetime/:storeid', (request, response, next) => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
-        var datetime = new Date(request.params.datetime);
+        var datetime = new Date(request._time);
         var storeId = request.params.storeid;
         var query = request.query;
+
+        datetime.setHours(datetime.getHours() - datetime.getTimezoneOffset() / 60);
 
         query.filter = {
             '_active': true,
             '_deleted': false,
-            'stores.code' : storeId
+            'stores.code': storeId
         };
 
         manager.read(query)
@@ -135,9 +137,10 @@ router.get('/all/:datetime/:storeid', (request, response, next) => {
                 for (var item of docs.data) {
                     var validFrom = new Date(item.validFrom);
                     var validTo = new Date(item.validTo);
+                    validFrom.setHours(validFrom.getHours() - validFrom.getTimezoneOffset() / 60);
+                    validTo.setHours(validTo.getHours() - validTo.getTimezoneOffset() / 60);
 
-                    if (datetime.getTime() >= validFrom.getTime() && 
-                            datetime.getTime() <= validTo.getTime()) {
+                    if (datetime >= validFrom && datetime <= validTo) {
                         data.push(item);
                     }
                 }
@@ -156,7 +159,7 @@ router.post('/', (request, response, next) => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
-        
+
         var data = request.body;
 
         manager.create(data)
@@ -178,7 +181,7 @@ router.put('/:id', (request, response, next) => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
         var data = request.body;
 
@@ -200,7 +203,7 @@ router.del('/:id', (request, response, next) => {
         var manager = new PromoManager(db, {
             username: 'router'
         });
-        
+
         var id = request.params.id;
         var data = request.body;
 
