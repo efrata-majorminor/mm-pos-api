@@ -136,17 +136,17 @@ router.get('/products/:datefrom/:dateto', passport, (request, response, next) =>
 
         Promise.all([result, query]).then((docs) => {
             var query = {};
-            if(docs[1][0]){
-                var count  = docs[1][0].total;
+            if (docs[1][0]) {
+                var count = docs[1][0].total;
                 query = {
-                    size : size,
-                    page :page,
-                    totalPage :  Math.ceil(count/size)
+                    size: size,
+                    page: page,
+                    totalPage: Math.ceil(count / size)
                 }
             }
             var returnValue = {
-                query : query,
-                data : docs[0]
+                query: query,
+                data: docs[0]
             }
             var result = resultFormatter.ok(apiVersion, 200, returnValue);
             result.info = returnValue;
@@ -169,11 +169,13 @@ router.get('/:datefrom/:dateto/:groupby', passport, (request, response, next) =>
 
         var result = {};
         if (groupby.toLowerCase() == "pos")
-            result = manager.omsetReportPos(datefrom, dateto);
+            result = manager.omsetReportPos(datefrom, dateto).toArray();
         else if (groupby.toLowerCase() == "store")
-            result = manager.omsetReportStore(datefrom, dateto);
+            result = manager.omsetReportStore(datefrom, dateto).toArray();
+        else
+            result = manager.omsetReportAll(datefrom, dateto);
 
-        result.toArray().then((docs) => {
+        result.then((docs) => {
             var result = resultFormatter.ok(apiVersion, 200, docs);
             result.info = docs;
             response.send(200, result);
