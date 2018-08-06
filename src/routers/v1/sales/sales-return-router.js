@@ -76,8 +76,8 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         var filter = {
             "storeId": new ObjectId(storeid),
             "date": {
-                "$gte": new Date(datefrom),
-                "$lte": new Date(dateto)
+                $gte: new Date(moment(datefrom).startOf("day")),
+                $lte: new Date(moment(dateto).endOf("day"))
             },
             'isVoid' : false
         };
