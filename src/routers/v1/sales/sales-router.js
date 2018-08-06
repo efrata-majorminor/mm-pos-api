@@ -5,6 +5,7 @@ var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 var ObjectId = require('mongodb').ObjectId;
 var passport = require('../../../passports/jwt-passport');
+const moment = require("moment");
 
 const apiVersion = '1.0.0';
 
@@ -78,8 +79,8 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         var filter = {
             storeId: new ObjectId(storeid),
             date: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
+                $gte: new Date(moment(dateFrom).startOf("day")),
+                $lte: new Date(moment(dateTo).endOf("day"))
             },
             'isVoid': false
         };
@@ -125,6 +126,8 @@ router.get('/products/:datefrom/:dateto', passport, (request, response, next) =>
         var page = request.query.page || 0;
         var size = request.query.size || 15;
         var groupby = request.params.groupby || "";
+        datefrom = new Date(moment(datefrom).startOf("day"));
+        dateto = new Date(moment(dateto).endOf("day"));
 
         var result = {};
         var query = {};
@@ -166,6 +169,8 @@ router.get('/:datefrom/:dateto/:groupby', passport, (request, response, next) =>
         var datefrom = request.params.datefrom;
         var dateto = request.params.dateto;
         var groupby = request.params.groupby || "";
+        datefrom = new Date(moment(datefrom).startOf("day"));
+        dateto = new Date(moment(dateto).endOf("day"));
 
         var result = {};
         if (groupby.toLowerCase() == "pos")
