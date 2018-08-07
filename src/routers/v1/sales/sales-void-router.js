@@ -5,6 +5,7 @@ var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 var ObjectId = require('mongodb').ObjectId;
 var passport = require('../../../passports/jwt-passport');
+const moment = require("moment");
 
 const apiVersion = '1.0.0';
 
@@ -81,8 +82,8 @@ router.get('/:datefrom/:dateto', passport, (request, response, next) => {
         var filter = {
             isVoid: true,
             date: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
+                $gte: new Date(moment(dateFrom).startOf("day")),
+                $lte: new Date(moment(dateTo).endOf("day"))
             }
         };
         query.filter = {
@@ -117,6 +118,9 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         var dateto = request.params.dateto;
         var shift = parseInt(request.params.shift);
         var query = request.query;
+        datefrom = new Date(moment(datefrom).startOf("day"));
+        dateto = new Date(moment(dateto).endOf("day"));
+
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
         
         var filterShift = {};
@@ -133,8 +137,8 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         var filterDate = {
             isVoid: true,
             _updatedDate: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
+                $gte: new Date(moment(datefrom).startOf("day")),
+                $lte: new Date(moment(dateto).endOf("day"))
             }
         }
         

@@ -5,6 +5,7 @@ var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 var ObjectId = require('mongodb').ObjectId;
 var passport = require('../../../passports/jwt-passport');
+const moment = require("moment");
 
 const apiVersion = '1.0.0';
 
@@ -76,8 +77,8 @@ router.get('/:storeid/:datefrom/:dateto/:shift', passport, (request, response, n
         var filter = {
             "storeId": new ObjectId(storeid),
             "date": {
-                "$gte": new Date(datefrom),
-                "$lte": new Date(dateto)
+                $gte: new Date(moment(datefrom).startOf("day")),
+                $lte: new Date(moment(dateto).endOf("day"))
             },
             'isVoid' : false
         };
