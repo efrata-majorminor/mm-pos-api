@@ -5,7 +5,7 @@ var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 var ObjectId = require('mongodb').ObjectId;
 var passport = require('../../../passports/jwt-passport');
-
+var moment = require('moment');
 const apiVersion = '1.0.0';
 
 router.get('/', passport, (request, response, next) => {
@@ -19,11 +19,13 @@ router.get('/', passport, (request, response, next) => {
              
         var query = request.query;
         query.filter = !query.filter ? {} : JSON.parse(query.filter);
+        datefrom = moment(datefrom).startOf('day');
+        dateto = moment(dateto).endOf('day');
         var filter = {
             storeId: new ObjectId(storeid),
             date: {
-                $gte: new Date(datefrom),
-                $lte: new Date(dateto)
+                $gte: datefrom._d,
+                $lte: dateto._d
             },
             'isVoid': false
         };
@@ -72,7 +74,7 @@ router.get('/', passport, (request, response, next) => {
                 var sumTotalDiskonPenjual = 0;
                 var sumTotalMargin = 0;
                 var sumTotalOmsetNetto = 0;
-                var dateFormat = "DD MMM YYYY";
+                var dateFormat = "Do MMMM YYYY";
                 var locale = 'id-ID';
                 var moment = require('moment');
                 moment.locale(locale);
@@ -85,7 +87,7 @@ router.get('/', passport, (request, response, next) => {
                     var result = {};
                     result["Toko"] = storeName;
                     result["Shift"] = shiftTemp;
-                    result["Tanggal"] = moment(salesPerDay.date).zone(datefrom).format(dateFormat);
+                    result["Tanggal"] = moment(salesPerDay.date).format(dateFormat);
                     result["No Pembayaran"] = salesPerDay.code;
                     result["Tipe Pembayaran"] = salesPerDay.salesDetail.paymentType;
                     result["Kartu"] = salesPerDay.salesDetail.card ? salesPerDay.salesDetail.card : "";
