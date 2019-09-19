@@ -1,6 +1,6 @@
 var Router = require('restify-router').Router;;
 var router = new Router();
-var SalesManager = require('bateeq-module').sales.SalesManager;
+var SalesManager = require('mm-module').sales.SalesManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 var ObjectId = require('mongodb').ObjectId;
