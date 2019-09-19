@@ -1,6 +1,6 @@
 var Router = require('restify-router').Router;;
 var router = new Router();
-var CardTypeManager = require('bateeq-module').master.CardTypeManager;
+var CardTypeManager = require('mm-module').master.CardTypeManager;
 var db = require('../../../db');
 var resultFormatter = require("../../../result-formatter");
 
