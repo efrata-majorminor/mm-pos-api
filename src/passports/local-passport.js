@@ -1,6 +1,6 @@
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var AccountManager = require('bateeq-module').auth.AccountManager;
+var AccountManager = require('mm-module').auth.AccountManager;
 var db = require('../db');
 
 passport.use(new LocalStrategy(function(username, password, done) {
