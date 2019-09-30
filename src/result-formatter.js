@@ -1,4 +1,4 @@
-var ValidationError = require('bateeq-module').ValidationError;
+var ValidationError = require('mm-module').ValidationError;
 
 function formatResult(apiVersion, statusCode, message, data, error) {
     var result = {

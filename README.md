@@ -1,2 +1,2 @@
-# bateeq-pos-api
-Bateeq RESTful POS api
+# mm-pos-api
+Major Minor RESTful POS api
